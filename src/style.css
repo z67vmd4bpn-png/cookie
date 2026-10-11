@@ -4,16 +4,10 @@
   font-family: 'Zen Maru Gothic', sans-serif;
   color: #895f4a;
   background: #fff7ed;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
   --cream: #fff7ed;
   --pink: #f8e3e4;
-  --pink-deep: #d995a8;
   --brown: #895f4a;
-  --mint: #e8edda;
   --gold: #d8b16f;
-  --line: #efc6a6;
 }
 
 * {
@@ -43,7 +37,6 @@ button {
   width: min(100%, 620px);
   margin: 0 auto;
   padding: 20px 14px 32px;
-  overflow: hidden;
 }
 
 .page-header {
@@ -100,7 +93,7 @@ button {
   padding: 14px 12px;
   border: 1px solid #f0c9aa;
   border-radius: 25px;
-  background: rgba(255, 251, 244, .9);
+  background: rgba(255, 251, 244, .94);
   box-shadow: 0 4px 0 rgba(231, 196, 162, .13);
 }
 
@@ -174,8 +167,8 @@ button {
 }
 
 .tin-grid {
-  display: grid;
   position: relative;
+  display: grid;
   width: 100%;
   height: 100%;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -185,8 +178,8 @@ button {
 .tin-cell {
   min-width: 0;
   min-height: 0;
-  border-right: 1px dashed rgba(217, 174, 122, .6);
-  border-bottom: 1px dashed rgba(217, 174, 122, .6);
+  border-right: 1px dashed rgba(217, 174, 122, .55);
+  border-bottom: 1px dashed rgba(217, 174, 122, .55);
 }
 
 .tin-cell:nth-child(6n) {
@@ -198,10 +191,10 @@ button {
 }
 
 .tin-cell.occupied {
-  background: rgba(239, 200, 144, .12);
+  background: rgba(239, 200, 144, .1);
 }
 
-.placed-cookie {
+.tin-cookie {
   z-index: 2;
   display: grid;
   place-items: center;
@@ -209,9 +202,13 @@ button {
   min-height: 0;
   padding: 1px;
   border: 0;
-  background: transparent;
+  border-radius: 5px;
+  background: var(--cookie-color);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, .55),
+    0 1px 2px rgba(128, 83, 45, .1);
   cursor: pointer;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .cookie-art {
@@ -219,7 +216,7 @@ button {
   width: 100%;
   height: 100%;
   overflow: visible;
-  filter: drop-shadow(0 2px 2px rgba(111, 72, 39, .12));
+  filter: drop-shadow(0 1px 1px rgba(111, 72, 39, .12));
   pointer-events: none;
 }
 
@@ -238,6 +235,7 @@ button {
 }
 
 .message-icon {
+  flex-shrink: 0;
   color: #eea5ae;
   font-size: 21px;
 }
@@ -287,23 +285,31 @@ button {
   background: #fff9f0;
   color: #b27d62;
   font-size: 20px;
+  cursor: pointer;
 }
 
-.draggable-cookie {
+.cookie-piece-grid {
   display: grid;
-  place-items: center;
+  align-content: center;
+  justify-content: center;
   width: 100%;
   height: 91px;
   margin-top: 8px;
-  cursor: grab;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  cursor: grab;
 }
 
-.draggable-cookie .cookie-art {
-  width: 78px;
-  height: 78px;
+.cookie-piece-grid:active {
+  cursor: grabbing;
+}
+
+.tray-cookie {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
 }
 
 .cookie-label {
@@ -323,18 +329,18 @@ button {
 .drag-preview {
   position: fixed;
   z-index: 9999;
-  display: grid;
-  place-items: center;
-  width: 76px;
-  height: 76px;
-  margin: -38px 0 0 -38px;
+  width: 120px;
+  height: 90px;
+  margin: -45px 0 0 -60px;
   pointer-events: none;
-  filter: drop-shadow(0 7px 8px rgba(116, 75, 42, .25));
 }
 
-.drag-preview .cookie-art {
-  width: 76px;
-  height: 76px;
+.preview-cookie {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  background: var(--cookie-color);
 }
 
 .bottom-actions {
@@ -405,8 +411,8 @@ button {
 }
 
 .success-cookie {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   margin: 10px auto;
 }
 
@@ -423,6 +429,7 @@ button {
   border-radius: 24px;
   background: #f3d2d7;
   color: #785548;
+  cursor: pointer;
 }
 
 @media (max-width: 380px) {
@@ -444,13 +451,8 @@ button {
     min-height: 136px;
   }
 
-  .draggable-cookie {
-    height: 82px;
-  }
-
-  .draggable-cookie .cookie-art {
-    width: 68px;
-    height: 68px;
+  .cookie-piece-grid {
+    transform: scale(.88);
   }
 
   .cookie-label {
