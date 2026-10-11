@@ -3,321 +3,239 @@ import './style.css';
 
 const COLS = 6;
 const ROWS = 4;
-const CELL = 27;
+const CELL = 40;
 
 const COOKIES = [
   {
     id: 'strawberry',
     name: 'いちご',
-    color: '#e9b46f',
-    shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
     kind: 'strawberry',
+    shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
   },
   {
     id: 'flower',
     name: 'お花',
-    color: '#edc779',
-    shape: [[0, 0], [1, 0], [2, 0], [1, 1]],
     kind: 'flower',
+    shape: [[0, 0], [1, 0], [2, 0], [1, 1]],
   },
   {
     id: 'heart',
     name: 'ハート',
-    color: '#e9b46f',
-    shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
     kind: 'heart',
+    shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
   },
   {
     id: 'mint',
     name: 'ミント',
-    color: '#b9c987',
-    shape: [[0, 0], [1, 0], [2, 0], [3, 0]],
     kind: 'mint',
+    shape: [[0, 0], [1, 0], [2, 0], [3, 0]],
   },
   {
     id: 'star',
     name: 'お星さま',
-    color: '#e9b46f',
-    shape: [[0, 0], [1, 0], [1, 1], [2, 1]],
     kind: 'star',
+    shape: [[0, 0], [1, 0], [1, 1], [2, 1]],
   },
   {
     id: 'chocolate',
     name: 'チョコ',
-    color: '#d9a365',
-    shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
     kind: 'chocolate',
+    shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
   },
 ];
 
 function rotateShape(shape) {
-  const next = shape.map(([x, y]) => [-y, x]);
-  const minX = Math.min(...next.map(([x]) => x));
-  const minY = Math.min(...next.map(([, y]) => y));
+  const rotated = shape.map(([x, y]) => [-y, x]);
+  const minX = Math.min(...rotated.map(([x]) => x));
+  const minY = Math.min(...rotated.map(([, y]) => y));
 
-  return next.map(([x, y]) => [x - minX, y - minY]);
+  return rotated.map(([x, y]) => [x - minX, y - minY]);
 }
 
-function shapeSize(shape) {
+function getSize(shape) {
   return {
     width: Math.max(...shape.map(([x]) => x)) + 1,
     height: Math.max(...shape.map(([, y]) => y)) + 1,
   };
 }
 
-function CookieArt({ kind, size = 76 }) {
-  const id = `cookie-${kind}`;
-
-  const common = {
-    strokeLinejoin: 'round',
-    strokeLinecap: 'round',
-  };
-
+function CookieArt({ kind }) {
   return (
     <svg
       className={`cookie-art cookie-art-${kind}`}
       viewBox="0 0 100 100"
-      width={size}
-      height={size}
+      aria-label={kind}
       role="img"
-      aria-label={`${kind}クッキー`}
     >
       <defs>
-        <radialGradient id={`${id}-biscuit`} cx="35%" cy="25%" r="80%">
-          <stop offset="0%" stopColor="#ffe6aa" />
-          <stop offset="55%" stopColor="#edb96f" />
-          <stop offset="100%" stopColor="#bd783d" />
+        <radialGradient id={`${kind}-biscuit`} cx="30%" cy="25%" r="85%">
+          <stop offset="0%" stopColor="#ffe9b6" />
+          <stop offset="65%" stopColor="#eab36b" />
+          <stop offset="100%" stopColor="#b9773c" />
         </radialGradient>
 
-        <radialGradient id={`${id}-jam`} cx="35%" cy="25%" r="80%">
-          <stop offset="0%" stopColor="#ff9a9e" />
-          <stop offset="65%" stopColor="#d94350" />
-          <stop offset="100%" stopColor="#a92738" />
+        <radialGradient id={`${kind}-jam`} cx="30%" cy="25%" r="80%">
+          <stop offset="0%" stopColor="#ff9da6" />
+          <stop offset="100%" stopColor="#c83248" />
         </radialGradient>
 
-        <linearGradient id={`${id}-mint`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#e0e9a8" />
-          <stop offset="55%" stopColor="#b7ca7b" />
-          <stop offset="100%" stopColor="#839f59" />
-        </linearGradient>
-
-        <filter id={`${id}-shadow`} x="-30%" y="-30%" width="160%" height="180%">
+        <filter id={`${kind}-shadow`} x="-25%" y="-25%" width="150%" height="160%">
           <feDropShadow
             dx="0"
             dy="3"
-            stdDeviation="2.5"
-            floodColor="#95613b"
-            floodOpacity="0.28"
+            stdDeviation="2"
+            floodColor="#8d5b35"
+            floodOpacity=".3"
           />
         </filter>
       </defs>
 
-      <g filter={`url(#${id}-shadow)`} {...common}>
+      <g
+        filter={`url(#${kind}-shadow)`}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      >
         {kind === 'strawberry' && (
           <>
             <path
-              d="M50 9 C59 9 64 17 72 17 C83 17 91 29 91 41 C91 52 83 59 79 68 C74 80 63 91 50 91 C37 91 26 80 21 68 C17 59 9 52 9 41 C9 29 17 17 28 17 C36 17 41 9 50 9 Z"
-              fill={`url(#${id}-biscuit)`}
-              stroke="#b77b43"
-              strokeWidth="2"
-            />
-            <path
-              d="M50 17 C59 17 64 24 72 24 C79 24 84 32 84 41 C84 50 77 57 73 65 C68 76 59 83 50 83 C41 83 32 76 27 65 C23 57 16 50 16 41 C16 32 21 24 28 24 C36 24 41 17 50 17 Z"
-              fill="#f8d99c"
-              stroke="#fceac2"
-              strokeWidth="2"
-            />
-            <path
-              d="M50 30 C61 30 70 39 70 49 C70 61 61 69 50 69 C39 69 30 61 30 49 C30 39 39 30 50 30 Z"
-              fill={`url(#${id}-jam)`}
-              stroke="#b94b42"
-              strokeWidth="2"
-            />
-            <path
-              d="M39 39 Q43 34 48 35"
-              stroke="#ffe5d0"
+              d="M50 8 C61 8 66 18 76 18 C91 18 95 34 88 47 C83 58 69 79 50 91 C31 79 17 58 12 47 C5 34 9 18 24 18 C34 18 39 8 50 8Z"
+              fill={`url(#${kind}-biscuit)`}
+              stroke="#ad703a"
               strokeWidth="3"
-              opacity="0.8"
             />
-            {[
-              [28, 33], [72, 34], [24, 54], [76, 54],
-              [36, 74], [64, 74], [48, 23], [51, 77],
-            ].map(([x, y], i) => (
-              <circle key={i} cx={x} cy={y} r="1.5" fill="#fff0c8" />
-            ))}
+            <path
+              d="M50 25 C63 25 73 35 73 48 C73 61 62 70 50 70 C38 70 27 61 27 48 C27 35 37 25 50 25Z"
+              fill={`url(#${kind}-jam)`}
+              stroke="#f9d8ad"
+              strokeWidth="3"
+            />
+            <path
+              d="M37 37 Q42 31 47 35"
+              fill="none"
+              stroke="#fff2d7"
+              strokeWidth="4"
+            />
+            {[[37, 47], [62, 43], [44, 59], [58, 58], [51, 39]].map(
+              ([x, y], i) => (
+                <circle key={i} cx={x} cy={y} r="1.7" fill="#ffe9c5" />
+              )
+            )}
           </>
         )}
 
         {kind === 'flower' && (
           <>
             <path
-              d="M50 5 C58 5 61 19 67 24 C73 17 86 17 90 25 C94 33 84 42 79 48 C88 53 94 65 88 72 C82 79 70 72 63 68 C62 80 57 93 49 93 C40 93 37 80 36 68 C28 74 16 79 10 71 C4 63 13 52 21 47 C12 41 5 31 11 24 C18 16 30 23 36 27 C39 16 42 5 50 5 Z"
-              fill={`url(#${id}-biscuit)`}
-              stroke="#b77b43"
-              strokeWidth="2"
-            />
-            <path
-              d="M50 12 C57 12 59 24 64 29 C70 24 80 23 84 29 C87 36 77 42 72 47 C79 52 86 62 81 68 C76 74 65 66 60 64 C59 74 56 86 50 86 C44 86 41 74 40 64 C33 68 24 74 19 68 C14 62 21 52 28 47 C22 42 13 35 18 29 C23 23 33 27 39 30 C42 20 44 12 50 12 Z"
-              fill="#ffe4a5"
-              stroke="#fff0c8"
-              strokeWidth="2"
+              d="M50 6 C61 6 61 25 68 30 C78 24 91 31 87 42 C85 49 75 50 72 53 C82 62 78 76 67 76 C60 76 56 69 51 67 C49 80 42 92 33 84 C26 78 32 67 32 61 C19 65 8 57 15 47 C18 41 28 41 32 37 C24 27 31 16 41 22 C47 25 48 16 50 6Z"
+              fill={`url(#${kind}-biscuit)`}
+              stroke="#ae713d"
+              strokeWidth="2.5"
             />
             <circle
               cx="50"
               cy="49"
-              r="12"
-              fill="#e4a92f"
-              stroke="#c48722"
-              strokeWidth="2"
+              r="13"
+              fill="#e8aa2d"
+              stroke="#c78920"
+              strokeWidth="3"
             />
-            <circle cx="46" cy="45" r="3" fill="#fff0b5" />
-            {Array.from({ length: 8 }, (_, i) => {
-              const angle = (i * Math.PI) / 4;
-              return (
-                <circle
-                  key={i}
-                  cx={50 + Math.cos(angle) * 27}
-                  cy={49 + Math.sin(angle) * 27}
-                  r="1.5"
-                  fill="#fff5d7"
-                />
-              );
-            })}
+            <circle cx="46" cy="45" r="3" fill="#fff0b3" />
           </>
         )}
 
         {kind === 'heart' && (
           <>
             <path
-              d="M50 87 C43 79 11 57 10 35 C9 18 25 10 38 18 L50 28 L62 18 C75 10 91 18 90 35 C89 57 57 79 50 87 Z"
-              fill={`url(#${id}-biscuit)`}
-              stroke="#b77b43"
-              strokeWidth="2.5"
-            />
-            <path
-              d="M50 77 C40 67 19 51 18 35 C17 24 27 18 37 24 L50 35 L63 24 C73 18 83 24 82 35 C81 51 60 67 50 77 Z"
-              fill="#f28fa0"
-              stroke="#ffe2bd"
+              d="M50 88 C42 79 10 57 9 35 C8 18 26 10 39 20 L50 29 L61 20 C74 10 92 18 91 35 C90 57 58 79 50 88Z"
+              fill={`url(#${kind}-biscuit)`}
+              stroke="#b1743c"
               strokeWidth="3"
             />
             <path
-              d="M28 31 Q31 25 37 29"
-              fill="none"
-              stroke="#fff4e7"
+              d="M50 76 C40 67 19 50 18 35 C18 25 28 20 38 27 L50 37 L62 27 C72 20 82 25 82 35 C81 50 60 67 50 76Z"
+              fill="#f38da1"
+              stroke="#ffe6c4"
               strokeWidth="3"
             />
-            {[
-              [37, 42], [61, 41], [29, 48], [70, 51],
-              [41, 58], [56, 60], [50, 48], [50, 69],
-            ].map(([x, y], i) => (
-              <circle key={i} cx={x} cy={y} r="1.8" fill="#fff0d6" />
-            ))}
+            {[[34, 39], [63, 37], [29, 49], [71, 49], [42, 59], [58, 60]].map(
+              ([x, y], i) => (
+                <circle key={i} cx={x} cy={y} r="2" fill="#fff1d7" />
+              )
+            )}
           </>
         )}
 
         {kind === 'mint' && (
           <>
             <path
-              d="M12 75 C12 37 39 11 86 12 C86 49 62 85 12 75 Z"
-              fill={`url(#${id}-mint)`}
-              stroke="#829a58"
-              strokeWidth="2.5"
+              d="M10 78 C11 39 40 10 89 12 C86 54 59 87 10 78Z"
+              fill="#b8ca80"
+              stroke="#7e9954"
+              strokeWidth="3"
             />
             <path
-              d="M17 71 Q45 49 79 17"
+              d="M15 73 Q46 49 82 17"
               fill="none"
-              stroke="#f0edbd"
+              stroke="#f5edc2"
               strokeWidth="4"
             />
             {[
-              [31, 54, 24, 39],
-              [43, 44, 34, 29],
-              [55, 34, 48, 21],
-              [39, 59, 51, 69],
-              [53, 46, 67, 55],
-              [65, 32, 76, 38],
+              [28, 58, 25, 44],
+              [41, 48, 36, 32],
+              [55, 37, 51, 24],
+              [38, 57, 50, 68],
+              [53, 45, 67, 54],
+              [67, 32, 77, 40],
             ].map(([x1, y1, x2, y2], i) => (
               <path
                 key={i}
-                d={`M${x1} ${y1} Q${(x1 + x2) / 2} ${(y1 + y2) / 2 - 5} ${x2} ${y2}`}
+                d={`M${x1} ${y1} Q${(x1 + x2) / 2} ${(y1 + y2) / 2} ${x2} ${y2}`}
                 fill="none"
-                stroke="#7e9957"
+                stroke="#799653"
                 strokeWidth="2"
               />
             ))}
-            <path
-              d="M17 71 Q45 49 79 17"
-              fill="none"
-              stroke="#f8f0c5"
-              strokeWidth="1"
-            />
           </>
         )}
 
         {kind === 'star' && (
           <>
             <path
-              d="M50 7 L62 34 L91 36 L69 55 L76 85 L50 69 L24 85 L31 55 L9 36 L38 34 Z"
-              fill={`url(#${id}-biscuit)`}
-              stroke="#b77b43"
-              strokeWidth="2.5"
+              d="M50 6 L62 34 L92 37 L69 57 L76 88 L50 72 L24 88 L31 57 L8 37 L38 34Z"
+              fill={`url(#${kind}-biscuit)`}
+              stroke="#ad703b"
+              strokeWidth="3"
             />
             <path
-              d="M50 15 L60 38 L84 40 L66 55 L72 77 L50 64 L28 77 L34 55 L16 40 L40 38 Z"
-              fill="#f9d895"
-              stroke="#ffedbe"
+              d="M50 15 L60 39 L83 41 L65 57 L71 78 L50 65 L29 78 L35 57 L17 41 L40 39Z"
+              fill="#f8d891"
+              stroke="#fff0c8"
               strokeWidth="2"
             />
-            <path
-              d="M50 23 L57 41 L75 42 L61 53 L65 70 L50 60 L35 70 L39 53 L25 42 L43 41 Z"
-              fill="none"
-              stroke="#e9b96e"
-              strokeWidth="1.5"
-              strokeDasharray="2 4"
-            />
-            {[
-              [50, 29], [36, 46], [64, 46], [42, 57], [58, 57],
-            ].map(([x, y], i) => (
-              <circle key={i} cx={x} cy={y} r="1.7" fill="#fff5d9" />
-            ))}
+            {[[50, 29], [37, 47], [64, 47], [42, 58], [58, 58]].map(
+              ([x, y], i) => (
+                <circle key={i} cx={x} cy={y} r="1.8" fill="#fff8df" />
+              )
+            )}
           </>
         )}
 
         {kind === 'chocolate' && (
           <>
             <path
-              d="M50 8 C63 8 68 15 77 18 C88 22 92 35 90 48 C94 61 83 76 72 80 C62 90 38 92 28 82 C14 78 7 65 10 51 C6 37 16 24 27 20 C34 11 41 8 50 8 Z"
-              fill={`url(#${id}-biscuit)`}
-              stroke="#ae713e"
-              strokeWidth="2.5"
+              d="M50 8 C65 8 70 18 80 23 C92 30 92 43 87 52 C91 66 78 79 66 81 C54 93 38 89 29 82 C14 80 7 67 12 53 C5 39 16 25 29 22 C35 12 42 8 50 8Z"
+              fill={`url(#${kind}-biscuit)`}
+              stroke="#ad713e"
+              strokeWidth="3"
             />
-            <path
-              d="M50 15 C62 15 68 22 75 24 C84 29 86 38 84 49 C88 60 78 71 69 75 C60 84 40 85 31 77 C20 73 14 62 16 51 C12 39 21 29 30 25 C37 18 42 15 50 15 Z"
-              fill="#e8b76e"
-              stroke="#f8d79c"
-              strokeWidth="2"
-            />
-            {[
-              [36, 31], [60, 28], [72, 43], [48, 47],
-              [27, 51], [38, 67], [62, 67], [72, 57],
-            ].map(([x, y], i) => (
-              <g key={i}>
-                <ellipse
-                  cx={x}
-                  cy={y + 1}
-                  rx="4.5"
-                  ry="5"
-                  fill="#75412e"
-                />
-                <ellipse
-                  cx={x - 1}
-                  cy={y - 1}
-                  rx="2"
-                  ry="2"
-                  fill="#b17a55"
-                />
-              </g>
-            ))}
+            {[[34, 31], [59, 29], [73, 43], [47, 47], [28, 52], [39, 67], [62, 68], [72, 57]].map(
+              ([x, y], i) => (
+                <g key={i}>
+                  <ellipse cx={x} cy={y + 1} rx="5" ry="5.5" fill="#70402e" />
+                  <ellipse cx={x - 1} cy={y - 1} rx="2" ry="2" fill="#a97450" />
+                </g>
+              )
+            )}
           </>
         )}
       </g>
@@ -325,28 +243,12 @@ function CookieArt({ kind, size = 76 }) {
   );
 }
 
-function CookiePiece({ cookie, size = 27 }) {
-  return (
-    <span
-      className={`cookie-piece cookie-piece-${cookie.kind}`}
-      style={{
-        width: size,
-        height: size,
-      }}
-    >
-      <CookieArt kind={cookie.kind} size={size * 1.85} />
-    </span>
-  );
-}
-
 export default function App() {
   const [board, setBoard] = useState(Array(COLS * ROWS).fill(null));
   const [placed, setPlaced] = useState({});
   const [rotations, setRotations] = useState({});
-  const [message, setMessage] = useState(
-    'クッキーをつまんで、缶の中に運んでね。'
-  );
   const [drag, setDrag] = useState(null);
+  const [message, setMessage] = useState('クッキーをつまんで、缶の中に運んでね。');
   const [finished, setFinished] = useState(false);
 
   const tinRef = useRef(null);
@@ -368,7 +270,6 @@ export default function App() {
     event.preventDefault();
 
     const current = {
-      id: cookie.id,
       cookie,
       pointerId: event.pointerId,
       startX: event.clientX,
@@ -406,27 +307,21 @@ export default function App() {
     setDrag(null);
 
     const moved =
-      Math.abs(current.x - current.startX) > 10 ||
-      Math.abs(current.y - current.startY) > 10;
+      Math.abs(current.x - current.startX) > 8 ||
+      Math.abs(current.y - current.startY) > 8;
 
-    if (!moved) {
-      setMessage('クッキーを指でつかんで、缶の中まで運んでね。');
-      return;
-    }
+    if (!moved) return;
 
-    const tin = tinRef.current;
-
-    if (!tin) return;
-
-    const rect = tin.getBoundingClientRect();
+    const rect = tinRef.current?.getBoundingClientRect();
 
     if (
+      !rect ||
       current.x < rect.left ||
-      current.x > rect.right ||
+      current.x >= rect.right ||
       current.y < rect.top ||
-      current.y > rect.bottom
+      current.y >= rect.bottom
     ) {
-      setMessage('缶の中にクッキーを運んでみてね。');
+      setMessage('缶の中までクッキーを運んでね。');
       return;
     }
 
@@ -436,7 +331,7 @@ export default function App() {
     const centerCol = Math.floor((current.x - rect.left) / cellWidth);
     const centerRow = Math.floor((current.y - rect.top) / cellHeight);
 
-    const size = shapeSize(current.shape);
+    const size = getSize(current.shape);
 
     const startCol = centerCol - Math.floor(size.width / 2);
     const startRow = centerRow - Math.floor(size.height / 2);
@@ -455,19 +350,27 @@ export default function App() {
     );
 
     if (!canPlace) {
-      setMessage('そこには入らないみたい。別の場所を試してね。');
+      setMessage('そこには入らないみたい。空いている場所を試してね。');
       return;
     }
 
     const nextBoard = [...board];
 
     cells.forEach(({ col, row }) => {
-      nextBoard[row * COLS + col] = current.id;
+      nextBoard[row * COLS + col] = current.cookie.id;
     });
+
+    const minCol = Math.min(...cells.map((cell) => cell.col));
+    const minRow = Math.min(...cells.map((cell) => cell.row));
 
     const nextPlaced = {
       ...placed,
-      [current.id]: { cells },
+      [current.cookie.id]: {
+        cells,
+        col: minCol,
+        row: minRow,
+        shape: current.shape,
+      },
     };
 
     setBoard(nextBoard);
@@ -522,66 +425,26 @@ export default function App() {
     setMessage('新しいクッキー缶を作ろう！');
   }
 
-  function renderCookieOnBoard(id, index) {
-    if (!id) return null;
-
-    const cookie = COOKIES.find((item) => item.id === id);
-
-    if (!cookie) return null;
-
-    const item = placed[id];
+  function renderPlacedCookie(cookie) {
+    const item = placed[cookie.id];
 
     if (!item) return null;
 
-    const firstCell = item.cells[0];
-    const currentCell = {
-      col: index % COLS,
-      row: Math.floor(index / COLS),
-    };
-
-    const isFirst =
-      currentCell.col === firstCell.col &&
-      currentCell.row === firstCell.row;
-
-    if (!isFirst) return null;
-
-    const shape = getShape(cookie);
-    const size = shapeSize(shape);
+    const size = getSize(item.shape);
 
     return (
       <button
-        key={`placed-${id}`}
+        key={cookie.id}
         type="button"
-        className={`placed-cookie placed-cookie-${cookie.kind}`}
+        className="placed-cookie"
         style={{
-          gridColumn: `${firstCell.col + 1} / span ${size.width}`,
-          gridRow: `${firstCell.row + 1} / span ${size.height}`,
+          gridColumn: `${item.col + 1} / span ${size.width}`,
+          gridRow: `${item.row + 1} / span ${size.height}`,
         }}
-        onClick={() => removeCookie(id)}
-        aria-label={`${cookie.name}を缶から取り出す`}
+        onClick={() => removeCookie(cookie.id)}
+        aria-label={`${cookie.name}を取り出す`}
       >
-        <div
-          className="placed-cookie-shape"
-          style={{
-            width: size.width * CELL,
-            height: size.height * CELL,
-          }}
-        >
-          {shape.map(([x, y], i) => (
-            <span
-              key={i}
-              className="placed-cookie-piece"
-              style={{
-                left: x * CELL,
-                top: y * CELL,
-                width: CELL,
-                height: CELL,
-              }}
-            >
-              <CookieArt kind={cookie.kind} size={CELL * 1.35} />
-            </span>
-          ))}
-        </div>
+        <CookieArt kind={cookie.kind} />
       </button>
     );
   }
@@ -589,32 +452,24 @@ export default function App() {
   return (
     <main className="storybook">
       <header className="page-header">
-        <div className="brand-mark">
-          <span>✿</span>
-        </div>
-
+        <div className="brand-mark">✿</div>
         <p className="eyebrow">THE LITTLE COOKIE SHOP</p>
-
         <h1>ちいさなクッキー缶</h1>
-
         <p className="intro">
           とっておきのお菓子を、
           <br />
           ひとつずつ詰めていこう。
         </p>
-
         <div className="decorative-line">✧　♡　✧</div>
       </header>
 
       <section className="tin-panel">
         <div className="section-heading">
           <span className="heading-flower">✿</span>
-
-          <div className="heading-copy">
+          <div>
             <h2>MY COOKIE TIN</h2>
             <p>クッキーをきれいに並べてね</p>
           </div>
-
           <span className="count-badge">
             {Object.keys(placed).length}/{COOKIES.length}
           </span>
@@ -631,9 +486,7 @@ export default function App() {
                   />
                 ))}
 
-                {board.map((id, index) =>
-                  id ? renderCookieOnBoard(id, index) : null
-                )}
+                {COOKIES.map(renderPlacedCookie)}
               </div>
             </div>
           </div>
@@ -648,8 +501,7 @@ export default function App() {
       <section className="cookie-section">
         <div className="section-heading">
           <span className="heading-flower">✿</span>
-
-          <div className="heading-copy">
+          <div>
             <h2>FRESHLY BAKED</h2>
             <p>クッキーをつまんで缶へ運ぼう</p>
           </div>
@@ -658,10 +510,9 @@ export default function App() {
         <div className="cookie-tray">
           {COOKIES.filter((cookie) => !placed[cookie.id]).map((cookie) => {
             const shape = getShape(cookie);
-            const size = shapeSize(shape);
 
             return (
-              <article className={`cookie-card card-${cookie.kind}`} key={cookie.id}>
+              <article className="cookie-card" key={cookie.id}>
                 <button
                   type="button"
                   className="rotate-button"
@@ -678,28 +529,7 @@ export default function App() {
                   onPointerUp={endDrag}
                   onPointerCancel={endDrag}
                 >
-                  <div
-                    className="cookie-shape"
-                    style={{
-                      width: size.width * CELL,
-                      height: size.height * CELL,
-                    }}
-                  >
-                    {shape.map(([x, y], index) => (
-                      <span
-                        key={index}
-                        className="cookie-piece"
-                        style={{
-                          left: x * CELL,
-                          top: y * CELL,
-                          width: CELL,
-                          height: CELL,
-                        }}
-                      >
-                        <CookieArt kind={cookie.kind} size={CELL * 1.65} />
-                      </span>
-                    ))}
-                  </div>
+                  <CookieArt kind={cookie.kind} />
                 </div>
 
                 <p className="cookie-label">{cookie.name}</p>
@@ -713,13 +543,10 @@ export default function App() {
       {drag && (
         <div
           className="drag-preview"
-          style={{
-            left: drag.x,
-            top: drag.y,
-          }}
+          style={{ left: drag.x, top: drag.y }}
           aria-hidden="true"
         >
-          <CookieArt kind={drag.cookie.kind} size={70} />
+          <CookieArt kind={drag.cookie.kind} />
         </div>
       )}
 
@@ -729,15 +556,12 @@ export default function App() {
           className="reset-button"
           onClick={resetGame}
         >
-          <span className="reset-icon">↻</span>
-          最初からやり直す
+          ↻　最初からやり直す
         </button>
       </div>
 
       <footer className="page-footer">
-        <span>✧</span>
-        made with love & a little sweetness
-        <span>✧</span>
+        ✧　made with love & a little sweetness　✧
       </footer>
 
       {finished && (
@@ -746,17 +570,14 @@ export default function App() {
             <div className="success-decoration">✿ ♡ ✿</div>
             <p className="success-eyebrow">WONDERFUL!</p>
             <h2>できあがり！</h2>
-
-            <div className="success-cookie-art">
-              <CookieArt kind="strawberry" size={95} />
+            <div className="success-cookie">
+              <CookieArt kind="strawberry" />
             </div>
-
-            <p className="success-message">
+            <p>
               とってもすてきな
               <br />
               クッキー缶ができたね。
             </p>
-
             <button type="button" onClick={resetGame}>
               もう一度つくる
             </button>
