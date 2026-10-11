@@ -1,374 +1,186 @@
-import { useMemo, useState } from 'react'
-import {
-RotateCw,
-Undo2,
-Menu,
-Sparkles,
-Heart,
-Flower2
-} from 'lucide-react'
-
-const WIDTH = 6
-const HEIGHT = 4
-
+import { useState } from 'react';
+import './style.css';
+const WIDTH = 6;
+const HEIGHT = 4;
 const COOKIES = [
-{
-id: ‘jam’,
-name: ‘ジャムクッキー’,
-icon: ‘🍪’,
-color: ‘#e8b96f’,
-cells: [[0, 0], [1, 0], [0, 1], [1, 1]],
-note: ‘まんなかにジャム’
-},
-{
-id: ‘flower’,
-name: ‘お花のクッキー’,
-icon: ‘🌼’,
-color: ‘#e8cd86’,
-cells: [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]],
-note: ‘お花のかたち’
-},
-{
-id: ‘heart’,
-name: ‘ハートクッキー’,
-icon: ‘💗’,
-color: ‘#e9a5a5’,
-cells: [[0, 0], [1, 0], [0, 1], [1, 1]],
-note: ‘ピンクのアイシング’
-},
-{
-id: ‘swirl’,
-name: ‘しぼりクッキー’,
-icon: ‘🥮’,
-color: ‘#dcb77c’,
-cells: [[0, 0], [1, 0], [0, 1], [1, 1]],
-note: ‘くるくる模様’
-},
-{
-id: ‘rabbit’,
-name: ‘うさぎクッキー’,
-icon: ‘🐇’,
-color: ‘#ead1a0’,
-cells: [[0, 0], [1, 0], [0, 1]],
-note: ‘ちいさなうさぎ’
-},
-{
-id: ‘choco’,
-name: ‘チョコクッキー’,
-icon: ‘🍫’,
-color: ‘#a87859’,
-cells: [[0, 0], [1, 0], [0, 1], [1, 1]],
-note: ‘カカオの香り’
+  { id: 1, name: 'いちごクッキー', emoji: '🍓', color: '#f8d4d9', shape: [[0, 0], [1, 0], [0, 1], [1, 1]] },
+  { id: 2, name: 'お花クッキー', emoji: '🌼', color: '#f7e7a9', shape: [[0, 0], [1, 0], [2, 0], [1, 1]] },
+  { id: 3, name: 'ハートクッキー', emoji: '💗', color: '#f6c4d5', shape: [[0, 0], [1, 0], [0, 1]] },
+  { id: 4, name: '抹茶クッキー', emoji: '🍵', color: '#c9dfb9', shape: [[0, 0], [1, 0], [2, 0]] },
+  { id: 5, name: '星クッキー', emoji: '⭐', color: '#f4df91', shape: [[0, 0], [1, 0], [1, 1]] },
+  { id: 6, name: 'チョコクッキー', emoji: '🍪', color: '#dfbd9e', shape: [[0, 0], [1, 0], [0, 1], [1, 1]] },
+];
+function rotateShape(shape) {
+  const rotated = shape.map(([x, y]) => [y, -x]);
+  const minX = Math.min(...rotated.map(([x]) => x));
+  const minY = Math.min(...rotated.map(([, y]) => y));
+  return rotated.map(([x, y]) => [x - minX, y - minY]);
 }
-]
-
-function rotateCells(cells) {
-const rotated = cells.map(([x, y]) => [-y, x])
-const minX = Math.min(…rotated.map(([x]) => x))
-const minY = Math.min(…rotated.map(([, y]) => y))
-
-return rotated.map(([x, y]) => [x - minX, y - minY])
-}
-
-function cellKey(x, y) {
-return ${x},${y}
-}
-
 export default function App() {
-const [placed, setPlaced] = useState([])
-const [selected, setSelected] = useState(‘jam’)
-const [rotations, setRotations] = useState({})
-const [message, setMessage] = useState(
-‘クッキーを選んで、缶の中にそっと置いてね。’
-)
-const [showMenu, setShowMenu] = useState(false)
-const [completed, setCompleted] = useState(false)
-
-const usedIds = new Set(placed.map(item => item.id))
-const selectedCookie =
-COOKIES.find(cookie => cookie.id === selected) || COOKIES[0]
-
-const selectedCells = useMemo(() => {
-let cells = selectedCookie.cells
-
-for (let i = 0; i < (rotations[selected] || 0); i++) {
-  cells = rotateCells(cells)
-}
-return cells
-
-}, [selectedCookie, selected, rotations])
-
-const occupied = useMemo(() => {
-return new Set(
-placed.flatMap(item =>
-item.cells.map(([x, y]) => cellKey(x, y))
-)
-)
-}, [placed])
-
-function placeCookie(x, y) {
-if (completed) {
-setMessage(‘この缶はできあがり！ 新しく遊んでみてね。’)
-return
-}
-
-if (usedIds.has(selected)) {
-  setMessage('そのクッキーはもう缶に入っているよ。')
-  return
-}
-const newCells = selectedCells.map(([dx, dy]) => [
-  x + dx,
-  y + dy
-])
-const isInvalid = newCells.some(([cx, cy]) =>
-  cx < 0 ||
-  cy < 0 ||
-  cx >= WIDTH ||
-  cy >= HEIGHT ||
-  occupied.has(cellKey(cx, cy))
-)
-if (isInvalid) {
-  setMessage('そこは少しせまいみたい。別の場所を試してね。')
-  return
-}
-setPlaced(previous => [
-  ...previous,
-  {
-    id: selected,
-    cells: newCells
+  const [board, setBoard] = useState(
+    Array.from({ length: WIDTH * HEIGHT }, () => null)
+  );
+  const [selectedId, setSelectedId] = useState(1);
+  const [rotations, setRotations] = useState({});
+  const [placed, setPlaced] = useState([]);
+  const [message, setMessage] = useState('クッキーを選んで、缶の中に並べてね。');
+  const [history, setHistory] = useState([]);
+  const selectedCookie = COOKIES.find((cookie) => cookie.id === selectedId);
+  const currentShape = selectedCookie
+    ? Array.from({ length: rotations[selectedId] || 0 }).reduce(
+        (shape) => rotateShape(shape),
+        selectedCookie.shape
+      )
+    : [];
+  function saveHistory() {
+    setHistory((previous) => [
+      ...previous,
+      { board: [...board], placed: [...placed] },
+    ]);
   }
-])
-setMessage(`${selectedCookie.name}をつめたよ。いい調子！`)
-
-}
-
-function undo() {
-if (completed || placed.length === 0) return
-
-const last = placed[placed.length - 1]
-setPlaced(previous => previous.slice(0, -1))
-setSelected(last.id)
-setMessage('ひとつ前に戻したよ。')
-
-}
-
-function rotate() {
-if (completed || usedIds.has(selected)) {
-setMessage(‘回転させたいクッキーを選んでね。’)
-return
-}
-
-setRotations(previous => ({
-  ...previous,
-  [selected]: ((previous[selected] || 0) + 1) % 4
-}))
-setMessage(`${selectedCookie.name}をくるっと回したよ。`)
-
-}
-
-function finish() {
-if (placed.length !== COOKIES.length) {
-setMessage(‘まだ缶に入っていないクッキーがあるよ。’)
-return
-}
-
-setCompleted(true)
-setMessage('できあがり！ かわいいクッキー缶になったね。')
-
-}
-
-function restart() {
-setPlaced([])
-setSelected(‘jam’)
-setRotations({})
-setCompleted(false)
-setMessage(‘新しいクッキー缶をつくろう！’)
-}
-
-return (
-♡
-Cookie TinPuzzle
-
-      <p>
-        クッキーをつめて、<br />
-        あなただけのかわいい<br />
-        クッキー缶をつくりましょう。
-      </p>
-    </section>
-    <section className="chapter">
-      <span>✿</span>
-      <div>
-        <small>ちいさな おかしやさん</small>
-        <strong>ステージ 1</strong>
-      </div>
-    </section>
-    <button
-      className="icon-button"
-      onClick={() => setShowMenu(value => !value)}
-      aria-label="メニュー"
-    >
-      <Menu size={20} />
-      <small>メニュー</small>
-    </button>
-  </header>
-  {showMenu && (
-    <section className="menu-note">
-      <h2>あそびかた</h2>
-      <p>
-        クッキーを選んでから、缶の空いているマスをタップしてね。
-        「まわす」で回転、「もどす」でひとつ前に戻せるよ。
-      </p>
-      <button
-        className="paper-button"
-        onClick={() => setShowMenu(false)}
-      >
-        とじる
-      </button>
-    </section>
-  )}
-  <section className="status">
-    <span>きょうのクッキー缶</span>
-    <strong>✿ {placed.length} / {COOKIES.length}</strong>
-  </section>
-  <section className="tin-wrap">
-    <div className="tin">
-      <div className="tin-inner">
-        <div
-          className="grid"
-          style={{
-            gridTemplateColumns: `repeat(${WIDTH}, 1fr)`,
-            gridTemplateRows: `repeat(${HEIGHT}, 1fr)`
-          }}
-        >
-          {Array.from(
-            { length: WIDTH * HEIGHT },
-            (_, index) => {
-              const x = index % WIDTH
-              const y = Math.floor(index / WIDTH)
-              const piece = placed.find(item =>
-                item.cells.some(
-                  ([cx, cy]) => cx === x && cy === y
-                )
-              )
-              const cookie = piece
-                ? COOKIES.find(item => item.id === piece.id)
-                : null
+  function placeCookie(index) {
+    if (!selectedCookie || placed.includes(selectedId)) {
+      setMessage('このクッキーはすでに缶に入っているよ。');
+      return;
+    }
+    const startX = index % WIDTH;
+    const startY = Math.floor(index / WIDTH);
+    const cells = currentShape.map(([x, y]) => ({
+      x: startX + x,
+      y: startY + y,
+    }));
+    const fits = cells.every(
+      ({ x, y }) =>
+        x >= 0 &&
+        x < WIDTH &&
+        y >= 0 &&
+        y < HEIGHT &&
+        board[y * WIDTH + x] === null
+    );
+    if (!fits) {
+      setMessage('そこには置けないみたい。別の場所を試してね。');
+      return;
+    }
+    saveHistory();
+    const nextBoard = [...board];
+    cells.forEach(({ x, y }) => {
+      nextBoard[y * WIDTH + x] = selectedId;
+    });
+    const nextPlaced = [...placed, selectedId];
+    setBoard(nextBoard);
+    setPlaced(nextPlaced);
+    setMessage(
+      nextPlaced.length === COOKIES.length
+        ? 'できあがり！すてきなクッキー缶になったね！'
+        : 'いい感じ！次のクッキーも並べてみよう。'
+    );
+  }
+  function rotateCookie() {
+    if (!selectedCookie || placed.includes(selectedId)) {
+      return;
+    }
+    setRotations((previous) => ({
+      ...previous,
+      [selectedId]: ((previous[selectedId] || 0) + 1) % 4,
+    }));
+  }
+  function undo() {
+    if (history.length === 0) {
+      setMessage('戻せる操作がないよ。');
+      return;
+    }
+    const previous = history[history.length - 1];
+    setBoard(previous.board);
+    setPlaced(previous.placed);
+    setHistory((items) => items.slice(0, -1));
+    setMessage('ひとつ前に戻したよ。');
+  }
+  function resetGame() {
+    setBoard(Array.from({ length: WIDTH * HEIGHT }, () => null));
+    setPlaced([]);
+    setRotations({});
+    setHistory([]);
+    setSelectedId(1);
+    setMessage('新しいクッキー缶を作ろう！');
+  }
+  return (
+    <main className="app">
+      <header className="app-header">
+        <p className="eyebrow">A LITTLE COOKIE STORY</p>
+        <h1>クッキー缶づくり</h1>
+        <p className="subtitle">小さなクッキーを、きれいに詰めよう。</p>
+      </header>
+      <section className="game-card">
+        <div className="tin-heading">
+          <span>MY COOKIE TIN</span>
+          <span>
+            {placed.length} / {COOKIES.length}
+          </span>
+        </div>
+        <div className="cookie-tin">
+          <div className="cookie-grid">
+            {board.map((cookieId, index) => {
+              const cookie = COOKIES.find((item) => item.id === cookieId);
               return (
                 <button
                   key={index}
-                  className={`cell ${cookie ? 'filled' : ''}`}
+                  type="button"
+                  className={`grid-cell ${cookie ? 'filled' : ''}`}
                   style={
                     cookie
-                      ? { '--cookie-color': cookie.color }
+                      ? { backgroundColor: cookie.color }
                       : undefined
                   }
-                  onClick={() => {
-                    if (cookie) {
-                      setMessage(`${cookie.name}が入っているよ。`)
-                    } else {
-                      placeCookie(x, y)
-                    }
-                  }}
-                  aria-label={`マス ${x + 1},${y + 1}`}
+                  onClick={() => placeCookie(index)}
+                  aria-label={`缶のマス ${index + 1}`}
                 >
-                  {cookie && <span>{cookie.icon}</span>}
+                  {cookie ? cookie.emoji : ''}
                 </button>
-              )
-            }
-          )}
+              );
+            })}
+          </div>
         </div>
-      </div>
-      <div className="tin-rim">
-        ✿ Le petit atelier ✿
-      </div>
-    </div>
-  </section>
-  <section className="message" aria-live="polite">
-    <Sparkles size={16} />
-    <span>{message}</span>
-  </section>
-  <section className="cookie-paper">
-    <div className="section-heading">
-      <Flower2 size={18} />
-      <h2>つかうクッキー</h2>
-      <span>ひとつ選んでね</span>
-    </div>
-    <div className="cookie-list">
-      {COOKIES.map(cookie => (
-        <button
-          key={cookie.id}
-          className={[
-            'cookie-choice',
-            selected === cookie.id ? 'active' : '',
-            usedIds.has(cookie.id) ? 'used' : ''
-          ].join(' ')}
-          onClick={() => {
-            if (completed) return
-            setSelected(cookie.id)
-            setMessage(
-              `${cookie.name}を選んだよ。缶の空いている場所をタップしてね。`
-            )
-          }}
-        >
-          <span
-            className="cookie-art"
-            style={{ '--cookie-color': cookie.color }}
-          >
-            {cookie.icon}
-          </span>
-          <span className="cookie-name">{cookie.name}</span>
-          {usedIds.has(cookie.id) && (
-            <span className="check">✓</span>
-          )}
-        </button>
-      ))}
-    </div>
-    <p className="cookie-note">
-      {selectedCookie.note}
-    </p>
-  </section>
-  <section className="actions">
-    <button
-      className="paper-button"
-      onClick={rotate}
-      disabled={completed}
-    >
-      <RotateCw size={17} />
-      まわす
-    </button>
-    <button
-      className="paper-button"
-      onClick={undo}
-      disabled={completed || placed.length === 0}
-    >
-      <Undo2 size={17} />
-      もどす
-    </button>
-    {completed ? (
-      <button className="primary-button" onClick={restart}>
-        <Heart size={16} />
-        もう一度
-      </button>
-    ) : (
-      <button className="primary-button" onClick={finish}>
-        <Heart size={16} />
-        できあがり
-      </button>
-    )}
-  </section>
-  {completed && (
-    <section className="completion">
-      <span>🎀</span>
-      <h2>できあがり！</h2>
-      <p>すてきなクッキー缶ができたね。</p>
-    </section>
-  )}
-  <footer>
-    <span>✿</span>
-    ひとつずつ、たいせつにつめて。
-    <span>✿</span>
-  </footer>
-</main>
-
-)
+        <p className="message" role="status">
+          {message}
+        </p>
+        <h2>クッキーを選ぶ</h2>
+        <div className="cookie-list">
+          {COOKIES.map((cookie) => (
+            <button
+              key={cookie.id}
+              type="button"
+              className={`cookie-choice ${
+                selectedId === cookie.id ? 'selected' : ''
+              } ${placed.includes(cookie.id) ? 'used' : ''}`}
+              onClick={() => {
+                setSelectedId(cookie.id);
+                setMessage(`${cookie.name}を選んだよ。`);
+              }}
+              disabled={placed.includes(cookie.id)}
+            >
+              <span className="cookie-emoji">{cookie.emoji}</span>
+              <span className="cookie-name">{cookie.name}</span>
+              {placed.includes(cookie.id) && (
+                <span className="check-mark">✓</span>
+              )}
+            </button>
+          ))}
+        </div>
+        <div className="action-buttons">
+          <button type="button" onClick={rotateCookie}>
+            ↻ 回転
+          </button>
+          <button type="button" onClick={undo}>
+            ↶ ひとつ戻す
+          </button>
+          <button type="button" onClick={resetGame}>
+            ♡ やり直す
+          </button>
+        </div>
+      </section>
+      <footer className="app-footer">
+        <p>take your time, enjoy a little sweetness.</p>
+      </footer>
+    </main>
+  );
 }
