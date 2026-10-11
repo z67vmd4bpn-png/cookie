@@ -6,7 +6,7 @@ Menu,
 Sparkles,
 Heart,
 Flower2
-} from ‘lucide-react’
+} from 'lucide-react'
 
 const WIDTH = 6
 const HEIGHT = 4
