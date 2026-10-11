@@ -3,43 +3,48 @@ import './style.css';
 
 const COLS = 6;
 const ROWS = 4;
-const CELL = 40;
 
 const COOKIES = [
   {
     id: 'strawberry',
     name: 'いちご',
     kind: 'strawberry',
+    color: '#f4b2bd',
     shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
   },
   {
     id: 'flower',
     name: 'お花',
     kind: 'flower',
+    color: '#f5d78c',
     shape: [[0, 0], [1, 0], [2, 0], [1, 1]],
   },
   {
     id: 'heart',
     name: 'ハート',
     kind: 'heart',
+    color: '#f3a9bd',
     shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
   },
   {
     id: 'mint',
     name: 'ミント',
     kind: 'mint',
+    color: '#c7d99a',
     shape: [[0, 0], [1, 0], [2, 0], [3, 0]],
   },
   {
     id: 'star',
     name: 'お星さま',
     kind: 'star',
+    color: '#f5d98c',
     shape: [[0, 0], [1, 0], [1, 1], [2, 1]],
   },
   {
     id: 'chocolate',
     name: 'チョコ',
     kind: 'chocolate',
+    color: '#d9a66c',
     shape: [[0, 0], [1, 0], [0, 1], [1, 1]],
   },
 ];
@@ -61,185 +66,146 @@ function getSize(shape) {
 
 function CookieArt({ kind }) {
   return (
-    <svg
-      className={`cookie-art cookie-art-${kind}`}
-      viewBox="0 0 100 100"
-      aria-label={kind}
-      role="img"
-    >
+    <svg viewBox="0 0 100 100" className={`cookie-art ${kind}`}>
       <defs>
-        <radialGradient id={`${kind}-biscuit`} cx="30%" cy="25%" r="85%">
-          <stop offset="0%" stopColor="#ffe9b6" />
-          <stop offset="65%" stopColor="#eab36b" />
-          <stop offset="100%" stopColor="#b9773c" />
-        </radialGradient>
-
-        <radialGradient id={`${kind}-jam`} cx="30%" cy="25%" r="80%">
-          <stop offset="0%" stopColor="#ff9da6" />
-          <stop offset="100%" stopColor="#c83248" />
-        </radialGradient>
-
-        <filter id={`${kind}-shadow`} x="-25%" y="-25%" width="150%" height="160%">
-          <feDropShadow
-            dx="0"
-            dy="3"
-            stdDeviation="2"
-            floodColor="#8d5b35"
-            floodOpacity=".3"
-          />
-        </filter>
+        <linearGradient id="biscuit" x1="0" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor="#ffe9b5" />
+          <stop offset="100%" stopColor="#d99b53" />
+        </linearGradient>
+        <linearGradient id="jam" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ff9da8" />
+          <stop offset="100%" stopColor="#d83f58" />
+        </linearGradient>
       </defs>
 
-      <g
-        filter={`url(#${kind}-shadow)`}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      >
-        {kind === 'strawberry' && (
-          <>
+      {kind === 'strawberry' && (
+        <>
+          <path
+            d="M50 12 C62 3 73 18 83 20 C99 29 91 49 79 64 L50 89 L21 64 C9 49 1 29 17 20 C27 18 38 3 50 12Z"
+            fill="url(#biscuit)"
+            stroke="#b87b43"
+            strokeWidth="4"
+          />
+          <circle cx="50" cy="46" r="24" fill="url(#jam)" stroke="#ffe8c2" strokeWidth="4" />
+          <path d="M37 36 Q44 27 51 34" fill="none" stroke="#fff2d9" strokeWidth="4" strokeLinecap="round" />
+          {[[34, 49], [51, 37], [63, 48], [44, 61], [60, 62]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="2" fill="#ffe8c2" />
+          ))}
+        </>
+      )}
+
+      {kind === 'flower' && (
+        <>
+          <path
+            d="M50 5 C61 5 61 25 68 31 C80 23 92 32 86 43 C83 50 73 50 70 54 C83 64 76 78 65 75 C60 74 56 68 51 66 C49 80 40 93 32 82 C27 75 32 66 32 61 C18 65 7 56 15 46 C20 40 28 41 32 36 C24 25 32 15 42 22 C47 26 48 14 50 5Z"
+            fill="url(#biscuit)"
+            stroke="#b87b43"
+            strokeWidth="3"
+          />
+          <circle cx="50" cy="49" r="14" fill="#e5a923" stroke="#c88920" strokeWidth="3" />
+          <circle cx="45" cy="44" r="4" fill="#fff0b9" />
+        </>
+      )}
+
+      {kind === 'heart' && (
+        <>
+          <path
+            d="M50 88 C40 77 9 56 9 34 C9 16 28 10 40 22 L50 31 L60 22 C72 10 91 16 91 34 C91 56 60 77 50 88Z"
+            fill="url(#biscuit)"
+            stroke="#b87b43"
+            strokeWidth="4"
+          />
+          <path
+            d="M50 75 C38 64 19 49 19 35 C19 25 29 21 39 29 L50 39 L61 29 C71 21 81 25 81 35 C81 49 62 64 50 75Z"
+            fill="#f38eaa"
+            stroke="#fff0d3"
+            strokeWidth="3"
+          />
+          {[[35, 40], [65, 39], [29, 51], [71, 51], [43, 58], [58, 59]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="2" fill="#fff1d8" />
+          ))}
+        </>
+      )}
+
+      {kind === 'mint' && (
+        <>
+          <path
+            d="M10 78 C12 39 42 11 90 12 C86 54 59 87 10 78Z"
+            fill="#bfd28f"
+            stroke="#809953"
+            strokeWidth="4"
+          />
+          <path d="M15 73 Q47 48 82 17" fill="none" stroke="#f7edc7" strokeWidth="4" />
+          {[
+            [28, 59, 25, 44],
+            [41, 48, 36, 32],
+            [55, 37, 51, 24],
+            [38, 57, 50, 68],
+            [53, 45, 67, 54],
+            [67, 32, 77, 40],
+          ].map(([x1, y1, x2, y2], i) => (
             <path
-              d="M50 8 C61 8 66 18 76 18 C91 18 95 34 88 47 C83 58 69 79 50 91 C31 79 17 58 12 47 C5 34 9 18 24 18 C34 18 39 8 50 8Z"
-              fill={`url(#${kind}-biscuit)`}
-              stroke="#ad703a"
-              strokeWidth="3"
-            />
-            <path
-              d="M50 25 C63 25 73 35 73 48 C73 61 62 70 50 70 C38 70 27 61 27 48 C27 35 37 25 50 25Z"
-              fill={`url(#${kind}-jam)`}
-              stroke="#f9d8ad"
-              strokeWidth="3"
-            />
-            <path
-              d="M37 37 Q42 31 47 35"
+              key={i}
+              d={`M${x1} ${y1} Q${(x1 + x2) / 2} ${(y1 + y2) / 2} ${x2} ${y2}`}
               fill="none"
-              stroke="#fff2d7"
-              strokeWidth="4"
-            />
-            {[[37, 47], [62, 43], [44, 59], [58, 58], [51, 39]].map(
-              ([x, y], i) => (
-                <circle key={i} cx={x} cy={y} r="1.7" fill="#ffe9c5" />
-              )
-            )}
-          </>
-        )}
-
-        {kind === 'flower' && (
-          <>
-            <path
-              d="M50 6 C61 6 61 25 68 30 C78 24 91 31 87 42 C85 49 75 50 72 53 C82 62 78 76 67 76 C60 76 56 69 51 67 C49 80 42 92 33 84 C26 78 32 67 32 61 C19 65 8 57 15 47 C18 41 28 41 32 37 C24 27 31 16 41 22 C47 25 48 16 50 6Z"
-              fill={`url(#${kind}-biscuit)`}
-              stroke="#ae713d"
-              strokeWidth="2.5"
-            />
-            <circle
-              cx="50"
-              cy="49"
-              r="13"
-              fill="#e8aa2d"
-              stroke="#c78920"
-              strokeWidth="3"
-            />
-            <circle cx="46" cy="45" r="3" fill="#fff0b3" />
-          </>
-        )}
-
-        {kind === 'heart' && (
-          <>
-            <path
-              d="M50 88 C42 79 10 57 9 35 C8 18 26 10 39 20 L50 29 L61 20 C74 10 92 18 91 35 C90 57 58 79 50 88Z"
-              fill={`url(#${kind}-biscuit)`}
-              stroke="#b1743c"
-              strokeWidth="3"
-            />
-            <path
-              d="M50 76 C40 67 19 50 18 35 C18 25 28 20 38 27 L50 37 L62 27 C72 20 82 25 82 35 C81 50 60 67 50 76Z"
-              fill="#f38da1"
-              stroke="#ffe6c4"
-              strokeWidth="3"
-            />
-            {[[34, 39], [63, 37], [29, 49], [71, 49], [42, 59], [58, 60]].map(
-              ([x, y], i) => (
-                <circle key={i} cx={x} cy={y} r="2" fill="#fff1d7" />
-              )
-            )}
-          </>
-        )}
-
-        {kind === 'mint' && (
-          <>
-            <path
-              d="M10 78 C11 39 40 10 89 12 C86 54 59 87 10 78Z"
-              fill="#b8ca80"
-              stroke="#7e9954"
-              strokeWidth="3"
-            />
-            <path
-              d="M15 73 Q46 49 82 17"
-              fill="none"
-              stroke="#f5edc2"
-              strokeWidth="4"
-            />
-            {[
-              [28, 58, 25, 44],
-              [41, 48, 36, 32],
-              [55, 37, 51, 24],
-              [38, 57, 50, 68],
-              [53, 45, 67, 54],
-              [67, 32, 77, 40],
-            ].map(([x1, y1, x2, y2], i) => (
-              <path
-                key={i}
-                d={`M${x1} ${y1} Q${(x1 + x2) / 2} ${(y1 + y2) / 2} ${x2} ${y2}`}
-                fill="none"
-                stroke="#799653"
-                strokeWidth="2"
-              />
-            ))}
-          </>
-        )}
-
-        {kind === 'star' && (
-          <>
-            <path
-              d="M50 6 L62 34 L92 37 L69 57 L76 88 L50 72 L24 88 L31 57 L8 37 L38 34Z"
-              fill={`url(#${kind}-biscuit)`}
-              stroke="#ad703b"
-              strokeWidth="3"
-            />
-            <path
-              d="M50 15 L60 39 L83 41 L65 57 L71 78 L50 65 L29 78 L35 57 L17 41 L40 39Z"
-              fill="#f8d891"
-              stroke="#fff0c8"
+              stroke="#809953"
               strokeWidth="2"
             />
-            {[[50, 29], [37, 47], [64, 47], [42, 58], [58, 58]].map(
-              ([x, y], i) => (
-                <circle key={i} cx={x} cy={y} r="1.8" fill="#fff8df" />
-              )
-            )}
-          </>
-        )}
+          ))}
+        </>
+      )}
 
-        {kind === 'chocolate' && (
-          <>
-            <path
-              d="M50 8 C65 8 70 18 80 23 C92 30 92 43 87 52 C91 66 78 79 66 81 C54 93 38 89 29 82 C14 80 7 67 12 53 C5 39 16 25 29 22 C35 12 42 8 50 8Z"
-              fill={`url(#${kind}-biscuit)`}
-              stroke="#ad713e"
-              strokeWidth="3"
-            />
-            {[[34, 31], [59, 29], [73, 43], [47, 47], [28, 52], [39, 67], [62, 68], [72, 57]].map(
-              ([x, y], i) => (
-                <g key={i}>
-                  <ellipse cx={x} cy={y + 1} rx="5" ry="5.5" fill="#70402e" />
-                  <ellipse cx={x - 1} cy={y - 1} rx="2" ry="2" fill="#a97450" />
-                </g>
-              )
-            )}
-          </>
-        )}
-      </g>
+      {kind === 'star' && (
+        <>
+          <path
+            d="M50 5 L62 34 L94 37 L70 58 L77 91 L50 73 L23 91 L30 58 L6 37 L38 34Z"
+            fill="url(#biscuit)"
+            stroke="#b87b43"
+            strokeWidth="4"
+          />
+          <path
+            d="M50 17 L59 40 L82 42 L64 57 L69 78 L50 65 L31 78 L36 57 L18 42 L41 40Z"
+            fill="#f9df9d"
+            stroke="#fff0cf"
+            strokeWidth="3"
+          />
+          {[[50, 30], [39, 48], [61, 48], [42, 59], [58, 59]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="2" fill="#fff8df" />
+          ))}
+        </>
+      )}
+
+      {kind === 'chocolate' && (
+        <>
+          <path
+            d="M50 8 C65 8 72 18 80 24 C94 32 91 45 87 53 C92 68 77 80 66 81 C54 92 38 89 29 82 C14 80 7 67 12 53 C5 39 16 25 29 22 C36 12 42 8 50 8Z"
+            fill="url(#biscuit)"
+            stroke="#ad713e"
+            strokeWidth="4"
+          />
+          {[[34, 31], [59, 29], [73, 43], [47, 47], [28, 52], [39, 67], [62, 68], [72, 57]].map(([x, y], i) => (
+            <g key={i}>
+              <circle cx={x} cy={y} r="5" fill="#70412e" />
+              <circle cx={x - 1} cy={y - 1} r="1.7" fill="#a97550" />
+            </g>
+          ))}
+        </>
+      )}
     </svg>
+  );
+}
+
+function CookiePiece({ cookie, onPointerDown, onPointerMove, onPointerUp }) {
+  return (
+    <div
+      className={`cookie-piece ${cookie.kind}`}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+    >
+      <CookieArt kind={cookie.kind} />
+    </div>
   );
 }
 
@@ -269,6 +235,8 @@ export default function App() {
 
     event.preventDefault();
 
+    const shape = getShape(cookie);
+
     const current = {
       cookie,
       pointerId: event.pointerId,
@@ -276,16 +244,21 @@ export default function App() {
       startY: event.clientY,
       x: event.clientX,
       y: event.clientY,
-      shape: getShape(cookie),
+      shape,
     };
 
     dragRef.current = current;
     setDrag(current);
+
+    try {
+      event.currentTarget.setPointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture is not available in every browser.
+    }
   }
 
   function moveDrag(event) {
     const current = dragRef.current;
-
     if (!current || current.pointerId !== event.pointerId) return;
 
     const next = {
@@ -300,7 +273,6 @@ export default function App() {
 
   function endDrag(event) {
     const current = dragRef.current;
-
     if (!current || current.pointerId !== event.pointerId) return;
 
     dragRef.current = null;
@@ -332,7 +304,6 @@ export default function App() {
     const centerRow = Math.floor((current.y - rect.top) / cellHeight);
 
     const size = getSize(current.shape);
-
     const startCol = centerCol - Math.floor(size.width / 2);
     const startRow = centerRow - Math.floor(size.height / 2);
 
@@ -350,7 +321,7 @@ export default function App() {
     );
 
     if (!canPlace) {
-      setMessage('そこには入らないみたい。空いている場所を試してね。');
+      setMessage('そこには置けないみたい。空いている場所を試してね。');
       return;
     }
 
@@ -360,15 +331,12 @@ export default function App() {
       nextBoard[row * COLS + col] = current.cookie.id;
     });
 
-    const minCol = Math.min(...cells.map((cell) => cell.col));
-    const minRow = Math.min(...cells.map((cell) => cell.row));
-
     const nextPlaced = {
       ...placed,
       [current.cookie.id]: {
         cells,
-        col: minCol,
-        row: minRow,
+        col: startCol,
+        row: startRow,
         shape: current.shape,
       },
     };
@@ -391,13 +359,10 @@ export default function App() {
       ...old,
       [cookie.id]: ((old[cookie.id] || 0) + 1) % 4,
     }));
-
-    setMessage(`${cookie.name}の向きを変えたよ。`);
   }
 
   function removeCookie(id) {
     const item = placed[id];
-
     if (!item) return;
 
     const nextBoard = [...board];
@@ -425,28 +390,26 @@ export default function App() {
     setMessage('新しいクッキー缶を作ろう！');
   }
 
-  function renderPlacedCookie(cookie) {
+  function renderCookieInTin(cookie) {
     const item = placed[cookie.id];
-
     if (!item) return null;
 
-    const size = getSize(item.shape);
-
-    return (
+    return item.cells.map(({ col, row }, index) => (
       <button
-        key={cookie.id}
+        key={`${cookie.id}-${index}`}
         type="button"
-        className="placed-cookie"
+        className="tin-cookie"
         style={{
-          gridColumn: `${item.col + 1} / span ${size.width}`,
-          gridRow: `${item.row + 1} / span ${size.height}`,
+          gridColumn: col + 1,
+          gridRow: row + 1,
+          '--cookie-color': cookie.color,
         }}
         onClick={() => removeCookie(cookie.id)}
         aria-label={`${cookie.name}を取り出す`}
       >
         <CookieArt kind={cookie.kind} />
       </button>
-    );
+    ));
   }
 
   return (
@@ -485,8 +448,7 @@ export default function App() {
                     className={`tin-cell ${id ? 'occupied' : ''}`}
                   />
                 ))}
-
-                {COOKIES.map(renderPlacedCookie)}
+                {COOKIES.map(renderCookieInTin)}
               </div>
             </div>
           </div>
@@ -510,6 +472,7 @@ export default function App() {
         <div className="cookie-tray">
           {COOKIES.filter((cookie) => !placed[cookie.id]).map((cookie) => {
             const shape = getShape(cookie);
+            const size = getSize(shape);
 
             return (
               <article className="cookie-card" key={cookie.id}>
@@ -523,13 +486,29 @@ export default function App() {
                 </button>
 
                 <div
-                  className="draggable-cookie"
+                  className="cookie-piece-grid"
+                  style={{
+                    gridTemplateColumns: `repeat(${size.width}, 34px)`,
+                    gridTemplateRows: `repeat(${size.height}, 34px)`,
+                  }}
                   onPointerDown={(event) => startDrag(event, cookie)}
                   onPointerMove={moveDrag}
                   onPointerUp={endDrag}
                   onPointerCancel={endDrag}
                 >
-                  <CookieArt kind={cookie.kind} />
+                  {shape.map(([x, y], index) => (
+                    <div
+                      key={index}
+                      className="tray-cookie"
+                      style={{
+                        gridColumn: x + 1,
+                        gridRow: y + 1,
+                        '--cookie-color': cookie.color,
+                      }}
+                    >
+                      <CookieArt kind={cookie.kind} />
+                    </div>
+                  ))}
                 </div>
 
                 <p className="cookie-label">{cookie.name}</p>
@@ -543,19 +522,29 @@ export default function App() {
       {drag && (
         <div
           className="drag-preview"
-          style={{ left: drag.x, top: drag.y }}
-          aria-hidden="true"
+          style={{
+            left: drag.x,
+            top: drag.y,
+          }}
         >
-          <CookieArt kind={drag.cookie.kind} />
+          {drag.shape.map(([x, y], index) => (
+            <div
+              key={index}
+              className="preview-cookie"
+              style={{
+                left: x * 30,
+                top: y * 30,
+                '--cookie-color': drag.cookie.color,
+              }}
+            >
+              <CookieArt kind={drag.cookie.kind} />
+            </div>
+          ))}
         </div>
       )}
 
       <div className="bottom-actions">
-        <button
-          type="button"
-          className="reset-button"
-          onClick={resetGame}
-        >
+        <button type="button" className="reset-button" onClick={resetGame}>
           ↻　最初からやり直す
         </button>
       </div>
